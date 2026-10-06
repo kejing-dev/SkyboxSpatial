@@ -1,0 +1,127 @@
+<resources>
+    <string name="app_name">SkyboxSpatial</string>
+
+    <!-- Title bar -->
+    <string name="nav_create">Create environment</string>
+    <string name="nav_library">My library</string>
+    <string name="nav_language">Language</string>
+    <string name="nav_settings">API key and settings</string>
+
+    <!-- Create -->
+    <string name="create_title">Where to next?</string>
+    <string name="create_subtitle">One sentence creates the landscape around you.</string>
+    <string name="prompt_placeholder">For example: a lakeside at dawn, pine forest and thin mist, snow mountains in the distance…</string>
+    <string name="prompt_counter">%1$d / %2$d · describe the place, time and mood</string>
+    <string name="create_footer">Static 360° panorama · library is stored on this device only</string>
+    <string name="generate">Generate</string>
+    <string name="remix_hint">Refine the previous result (keeps its composition)</string>
+    <string name="example_lake">Misty lake</string>
+    <string name="example_lake_prompt">A high mountain lake at dawn, surrounded by pine forest, thin mist over the water, snow-capped peaks in the distance, soft sunrise light.</string>
+    <string name="example_sunset">Seaside sunset</string>
+    <string name="example_sunset_prompt">A quiet beach at dusk, golden sunset over the sea, long sandy shore, gentle waves, sky fading from orange to violet.</string>
+    <string name="example_stars">Starry valley</string>
+    <string name="example_stars_prompt">A mountain valley at night, the Milky Way across a clear starry sky, dark ridgelines on the horizon, faint moonlight.</string>
+
+    <!-- Generating -->
+    <string name="generating_title">Creating your environment</string>
+    <string name="generating_copy">You can look at your library meanwhile and come back for the result.</string>
+    <string name="generating_queue">Queue position %1$d</string>
+    <string name="generating_downloading">Downloading the high-resolution panorama…</string>
+    <string name="submitting">Submitting…</string>
+    <string name="view_later">View later</string>
+
+    <!-- Preview -->
+    <string name="preview_title">Your environment is ready</string>
+    <string name="preview_note">Static panorama, best enjoyed by turning your head in place. The environment only changes after you enter.</string>
+    <string name="preview_resolution">%1$d × %2$d</string>
+    <string name="enter">Enter</string>
+    <string name="save_local">Save to this device</string>
+    <string name="saved_badge">Saved</string>
+    <string name="edit_prompt">Edit description</string>
+
+    <!-- Saved -->
+    <string name="saved_title">Saved to this device</string>
+    <string name="saved_copy">Download complete. It now opens offline. A copy is in Pictures/SkyboxSpatial.</string>
+    <string name="view_library">View library</string>
+    <string name="create_another">Create another</string>
+
+    <!-- Library -->
+    <string name="library_title">My library</string>
+    <string name="library_note">Stored on this device · works offline</string>
+    <string name="library_empty_title">Keep the places you love here</string>
+    <string name="library_empty_copy">Nothing saved yet. Generate an environment, then tap the save icon.</string>
+    <string name="create_first">Create the first environment</string>
+    <string name="details">Details</string>
+    <string name="remove">Remove</string>
+    <string name="remove_dialog_title">Remove this environment?</string>
+    <string name="remove_dialog_copy">The panorama file stored on this device will be deleted. It can no longer be opened offline.</string>
+    <string name="keep">Keep</string>
+    <string name="detail_prompt">Description</string>
+    <string name="detail_created">Saved on %1$s</string>
+    <string name="detail_style">Style: %1$s</string>
+    <string name="detail_folder">Copy in Pictures/SkyboxSpatial</string>
+    <string name="close">Close</string>
+
+    <!-- Full space -->
+    <string name="stage_preparing_eyebrow">XR Full Space</string>
+    <string name="stage_preparing_title">Preparing Full Space</string>
+    <string name="stage_preparing_copy">Loading the panorama. You enter when it is ready; the current environment stays until then.</string>
+    <string name="stay_in_preview">Stay in preview</string>
+    <string name="stage_enter_failed_title">Could not enter Full Space</string>
+    <string name="stage_enter_failed_copy">The system declined to open the environment. Your result is kept; try again.</string>
+    <string name="stage_loading">Loading the panorama…</string>
+    <string name="stage_help">Turn your head to look around. Use the console to turn the scene or leave.</string>
+    <string name="turn_left">Turn left</string>
+    <string name="turn_right">Turn right</string>
+    <string name="reset_heading">Reset heading</string>
+    <string name="exit">Exit</string>
+
+    <!-- Errors -->
+    <string name="error_eyebrow">A small problem</string>
+    <string name="generation_failed_title">This one did not generate</string>
+    <string name="generation_failed_copy">Your description is kept. Edit it and generate again; that starts a new task.</string>
+    <string name="back_to_create">Back to create</string>
+    <string name="network_lost_title">Connection interrupted</string>
+    <string name="network_lost_copy">The task is still on the server. Reconnect and check the same task; nothing is generated twice.</string>
+    <string name="check_task">Check task</string>
+    <string name="download_failed_title">Download failed</string>
+    <string name="download_failed_copy">The panorama was generated but could not be downloaded. Only the download is retried.</string>
+    <string name="retry_download">Retry download</string>
+    <string name="save_failed_title">Could not save</string>
+    <string name="save_failed_copy">The image was not written completely, so nothing was added to the library. Check free space and try again.</string>
+    <string name="retry_save">Retry save</string>
+    <string name="service_unavailable_title">Service unavailable</string>
+    <string name="service_unavailable_copy">The generation service did not accept the request. Your description is kept.</string>
+    <string name="unknown_submit_title">Submission unconfirmed</string>
+    <string name="unknown_submit_copy">The request was sent but no answer came back. Check whether a task exists before generating again, so you are not charged twice.</string>
+    <string name="unknown_submit_check">Look for the task</string>
+    <string name="unknown_submit_none">No matching task was found on the server.</string>
+    <string name="regenerate">Generate again</string>
+    <string name="missing_key_title">Add your API key first</string>
+    <string name="missing_key_copy">Generation runs on the Skybox AI service with your own key. Paste it in settings; it stays on this device.</string>
+    <string name="open_settings">Open settings</string>
+    <string name="error_detail">Server said: %1$s</string>
+    <string name="error_unauthorized">The API key was rejected (HTTP %1$d). Check it in settings.</string>
+    <string name="error_rate_limited">Too many pending tasks on this account. Wait for them to finish.</string>
+    <string name="error_http">HTTP %1$d</string>
+
+    <!-- Settings -->
+    <string name="settings_title">API key</string>
+    <string name="settings_copy">Create a key at skybox.blockadelabs.com/api, copy it in the browser, then paste it here. It is stored only on this device and sent only to the Skybox API.</string>
+    <string name="api_key_placeholder">Paste your Skybox API key</string>
+    <string name="paste">Paste from clipboard</string>
+    <string name="clear">Clear</string>
+    <string name="key_saved">Key saved</string>
+    <string name="clipboard_empty">Clipboard is empty</string>
+    <string name="style_title">Style</string>
+    <string name="style_copy">Model 3 styles generate 8K panoramas and support refining a previous result.</string>
+    <string name="style_loading">Loading styles…</string>
+    <string name="style_refresh">Reload styles</string>
+    <string name="style_none">Enter a valid key to load styles.</string>
+    <string name="style_model">Model %1$s</string>
+    <string name="settings_done">Done</string>
+
+    <!-- Misc -->
+    <string name="untitled">Environment</string>
+    <string name="already_saved">Already in your library</string>
+</resources>

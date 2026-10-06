@@ -1,0 +1,127 @@
+<resources>
+    <string name="app_name">SkyboxSpatial</string>
+
+    <!-- Title bar -->
+    <string name="nav_create">创建环境</string>
+    <string name="nav_library">我的收藏</string>
+    <string name="nav_language">语言</string>
+    <string name="nav_settings">API Key 与设置</string>
+
+    <!-- Create -->
+    <string name="create_title">下一站，去哪里？</string>
+    <string name="create_subtitle">用一句话，创造包围你的风景。</string>
+    <string name="prompt_placeholder">例如：清晨的湖边，松林与薄雾，远处是雪山…</string>
+    <string name="prompt_counter">%1$d / %2$d · 描述地点、时间和氛围</string>
+    <string name="create_footer">静态 360° 全景 · 收藏仅保存在本机</string>
+    <string name="generate">生成环境</string>
+    <string name="remix_hint">在上一张的基础上微调（保留构图）</string>
+    <string name="example_lake">湖畔晨雾</string>
+    <string name="example_lake_prompt">清晨的高山湖泊，松林环绕，水面有薄雾，远处是雪山，柔和的日出。</string>
+    <string name="example_sunset">海边落日</string>
+    <string name="example_sunset_prompt">黄昏的海边，金色的落日，长长的沙滩，海浪轻拍，天空从橙色渐变到紫色。</string>
+    <string name="example_stars">星空山谷</string>
+    <string name="example_stars_prompt">夜晚的山谷，漫天星空与银河，远处山脊的剪影，微弱的月光。</string>
+
+    <!-- Generating -->
+    <string name="generating_title">正在创造你的环境</string>
+    <string name="generating_copy">你可以先去看看收藏，回来后继续查看结果。</string>
+    <string name="generating_queue">排队位置 %1$d</string>
+    <string name="generating_downloading">正在下载高清全景…</string>
+    <string name="submitting">正在提交…</string>
+    <string name="view_later">稍后查看</string>
+
+    <!-- Preview -->
+    <string name="preview_title">你的环境已就绪</string>
+    <string name="preview_note">静态全景，适合原地转头观看。点击进入后才会切换环境。</string>
+    <string name="preview_resolution">%1$d × %2$d</string>
+    <string name="enter">进入体验</string>
+    <string name="save_local">收藏到本机</string>
+    <string name="saved_badge">已收藏</string>
+    <string name="edit_prompt">修改描述</string>
+
+    <!-- Saved -->
+    <string name="saved_title">已收藏到本机</string>
+    <string name="saved_copy">下载已完成，下次可以离线进入。副本已放入 Pictures/SkyboxSpatial 文件夹。</string>
+    <string name="view_library">查看收藏</string>
+    <string name="create_another">再创作一个</string>
+
+    <!-- Library -->
+    <string name="library_title">我的收藏</string>
+    <string name="library_note">保存在本机 · 可离线体验</string>
+    <string name="library_empty_title">把喜欢的风景留在这里</string>
+    <string name="library_empty_copy">还没有收藏。生成环境后，点击收藏图标。</string>
+    <string name="create_first">创建第一个环境</string>
+    <string name="details">查看详情</string>
+    <string name="remove">移除收藏</string>
+    <string name="remove_dialog_title">移除这份收藏？</string>
+    <string name="remove_dialog_copy">将删除本机保存的全景图片。移除后无法离线打开。</string>
+    <string name="keep">保留</string>
+    <string name="detail_prompt">描述</string>
+    <string name="detail_created">收藏于 %1$s</string>
+    <string name="detail_style">风格：%1$s</string>
+    <string name="detail_folder">副本在 Pictures/SkyboxSpatial</string>
+    <string name="close">关闭</string>
+
+    <!-- Full space -->
+    <string name="stage_preparing_eyebrow">XR Full Space</string>
+    <string name="stage_preparing_title">正在准备 Full Space</string>
+    <string name="stage_preparing_copy">正在加载全景。准备完成后进入，期间保留当前环境。</string>
+    <string name="stay_in_preview">留在预览</string>
+    <string name="stage_enter_failed_title">未能进入 Full Space</string>
+    <string name="stage_enter_failed_copy">系统没有允许打开环境。结果已保留，可以再试一次。</string>
+    <string name="stage_loading">正在加载全景…</string>
+    <string name="stage_help">转头环顾。用控制台转动场景或退出。</string>
+    <string name="turn_left">向左转</string>
+    <string name="turn_right">向右转</string>
+    <string name="reset_heading">重置朝向</string>
+    <string name="exit">退出体验</string>
+
+    <!-- Errors -->
+    <string name="error_eyebrow">暂时遇到一点问题</string>
+    <string name="generation_failed_title">这次没有生成成功</string>
+    <string name="generation_failed_copy">描述已保留。你可以修改后再生成；再次生成会创建一个新任务。</string>
+    <string name="back_to_create">返回创建</string>
+    <string name="network_lost_title">连接中断</string>
+    <string name="network_lost_copy">任务仍在服务器上。恢复网络后查询原任务，不会重复生成。</string>
+    <string name="check_task">查询任务</string>
+    <string name="download_failed_title">下载失败</string>
+    <string name="download_failed_copy">全景已生成但没有下载成功。只会重新下载图片。</string>
+    <string name="retry_download">重新下载</string>
+    <string name="save_failed_title">收藏失败</string>
+    <string name="save_failed_copy">图片没有完整写入，收藏没有新增。检查剩余空间后重试。</string>
+    <string name="retry_save">重试收藏</string>
+    <string name="service_unavailable_title">服务不可用</string>
+    <string name="service_unavailable_copy">生成服务没有接受这次请求。描述已保留。</string>
+    <string name="unknown_submit_title">提交待确认</string>
+    <string name="unknown_submit_copy">请求已发出但没有收到回应。先查一下任务是否存在，避免重复扣费。</string>
+    <string name="unknown_submit_check">查找任务</string>
+    <string name="unknown_submit_none">服务器上没有找到对应的任务。</string>
+    <string name="regenerate">重新生成</string>
+    <string name="missing_key_title">先填入 API Key</string>
+    <string name="missing_key_copy">生成由 Skybox AI 服务完成，使用你自己的密钥。在设置里粘贴即可，密钥只保存在本机。</string>
+    <string name="open_settings">打开设置</string>
+    <string name="error_detail">服务器返回：%1$s</string>
+    <string name="error_unauthorized">API Key 被拒绝（HTTP %1$d）。请在设置里检查。</string>
+    <string name="error_rate_limited">账号上待处理的任务太多，等它们完成后再试。</string>
+    <string name="error_http">HTTP %1$d</string>
+
+    <!-- Settings -->
+    <string name="settings_title">API Key</string>
+    <string name="settings_copy">在 skybox.blockadelabs.com/api 创建密钥，在浏览器里复制后粘贴到这里。密钥只保存在本机，只发送给 Skybox API。</string>
+    <string name="api_key_placeholder">粘贴你的 Skybox API Key</string>
+    <string name="paste">从剪贴板粘贴</string>
+    <string name="clear">清除</string>
+    <string name="key_saved">密钥已保存</string>
+    <string name="clipboard_empty">剪贴板是空的</string>
+    <string name="style_title">风格</string>
+    <string name="style_copy">Model 3 风格生成 8K 全景，并支持在上一张基础上微调。</string>
+    <string name="style_loading">正在加载风格…</string>
+    <string name="style_refresh">重新加载风格</string>
+    <string name="style_none">填入有效密钥后会加载风格列表。</string>
+    <string name="style_model">Model %1$s</string>
+    <string name="settings_done">完成</string>
+
+    <!-- Misc -->
+    <string name="untitled">环境</string>
+    <string name="already_saved">已经在收藏里了</string>
+</resources>
