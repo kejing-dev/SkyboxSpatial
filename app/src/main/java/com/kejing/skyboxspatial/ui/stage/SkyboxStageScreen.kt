@@ -50,11 +50,15 @@ import com.pico.spatial.ui.foundation.content.attachmentPanelComponent
 import com.pico.spatial.ui.foundation.content.panelSize
 import com.pico.spatial.ui.platform.containers.closeStage
 import java.io.IOException
+import androidx.compose.runtime.withFrameNanos
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 private const val YAW_STEP_DEGREES = 30f
+private const val AUTO_SPIN_DEGREES_PER_SECOND = 9f
+private const val AUTO_SPIN_DELAY_MS = 2_500L
 
 /**
  * Full Space: the sky sphere around the viewer and a small console floating below eye level with the
@@ -77,6 +81,19 @@ fun SkyboxStageScreen() {
         bitmap = null
         val path = content?.imagePath ?: return@LaunchedEffect
         bitmap = withContext(Dispatchers.IO) { ImageFiles.decodeForStage(path) }
+    }
+    val autoSpin by session.autoSpin.collectAsStateWithLifecycle()
+    val loaded = bitmap != null
+    LaunchedEffect(autoSpin, loaded) {
+        if (!autoSpin || !loaded) return@LaunchedEffect
+        delay(AUTO_SPIN_DELAY_MS)
+        var last = withFrameNanos { it }
+        while (true) {
+            withFrameNanos { now ->
+                yaw += (now - last) / 1_000_000_000f * AUTO_SPIN_DEGREES_PER_SECOND
+                last = now
+            }
+        }
     }
     DisposableEffect(Unit) {
         session.markOpen(true)

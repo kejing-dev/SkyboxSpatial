@@ -5,6 +5,7 @@ import com.kejing.skyboxspatial.data.api.BlockadeSkyboxApi
 import com.kejing.skyboxspatial.data.api.SkyboxApi
 import com.kejing.skyboxspatial.data.local.SkyboxLibraryStore
 import com.kejing.skyboxspatial.data.prefs.SettingsStore
+import com.kejing.skyboxspatial.ui.navigation.DemoMode
 import com.kejing.skyboxspatial.ui.stage.StageSession
 
 /**
@@ -24,6 +25,7 @@ object AppGraph {
         if (this::settings.isInitialized) return
         val app = context.applicationContext
         settings = SettingsStore(app)
+        DemoMode.takeKey(app)?.let { settings.setApiKey(it) }
         library = SkyboxLibraryStore(app)
         api = BlockadeSkyboxApi()
     }

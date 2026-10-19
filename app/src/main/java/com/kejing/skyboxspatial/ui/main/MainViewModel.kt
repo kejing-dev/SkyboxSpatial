@@ -28,9 +28,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * Owns the create flow (describe, generate, poll, download, preview, save) and the library list.
@@ -74,8 +76,15 @@ class MainViewModel(
         demo?.let { startDemo(it) }
     }
 
-    /** Emulator-only: shows a local file as if it had just been generated, optionally entering the stage. */
+    /** Emulator-only scripted runs; see [DemoMode]. */
     private fun startDemo(request: DemoMode.Request) {
+        when (request) {
+            is DemoMode.Request.ShowFile -> showDemoFile(request)
+            is DemoMode.Request.Record -> recordDemo(request)
+        }
+    }
+
+    private fun showDemoFile(request: DemoMode.Request.ShowFile) {
         viewModelScope.launch {
             val size = withContext(io) { ImageFiles.size(request.imagePath) } ?: return@launch
             val prompt = _state.value.prompt.ifBlank { examples.values.firstOrNull().orEmpty() }
@@ -84,10 +93,46 @@ class MainViewModel(
             _state.update { it.copy(phase = CreatePhase.Preview(result), page = Page.CREATE) }
             if (request.enterStage) {
                 delay(1_500)
+                stageSession.setAutoSpin(true)
                 enterCurrent()
             }
         }
     }
+
+    /** Types the prompt, generates for real, saves, then enters the Full Space with the panorama turning. */
+    private fun recordDemo(request: DemoMode.Request.Record) {
+        viewModelScope.launch {
+            settings.setLanguage(request.language)
+            stageSession.setLanguage(request.language)
+            request.styleId?.let { settings.setStyleId(it) }
+            chosenTitle = null
+            _state.update {
+                it.copy(language = request.language, page = Page.CREATE, phase = CreatePhase.Compose, prompt = "", remixSourceId = null,
+                    selectedStyleId = request.styleId ?: it.selectedStyleId)
+            }
+            delay(3_000)
+            for (i in 1..request.prompt.length) {
+                setPrompt(request.prompt.take(i), title = null)
+                delay(DEMO_TYPING_MS)
+            }
+            delay(1_200)
+            generate()
+            val ready = withTimeoutOrNull(300_000) {
+                state.first { it.phase is CreatePhase.Preview || it.phase.isFailure() }
+            } ?: return@launch
+            if (ready.phase !is CreatePhase.Preview) return@launch
+            delay(5_000)
+            saveCurrent()
+            withTimeoutOrNull(30_000) { state.first { it.phase is CreatePhase.Saved } } ?: return@launch
+            delay(3_500)
+            stageSession.setAutoSpin(true)
+            enterCurrent()
+        }
+    }
+
+    private fun CreatePhase.isFailure(): Boolean =
+        this is CreatePhase.GenerationFailed || this is CreatePhase.ServiceUnavailable || this is CreatePhase.NetworkLost ||
+            this is CreatePhase.DownloadFailed || this is CreatePhase.UnknownSubmit || this is CreatePhase.MissingApiKey
 
     fun onEvent(event: MainEvent) {
         when (event) {
@@ -207,6 +252,7 @@ class MainViewModel(
         val state = _state.value
         state.selectedStyle?.let { return it.id }
         val styles = state.styles.ifEmpty { fetchStyles() ?: return null }
+        _state.value.selectedStyle?.let { return it.id }
         val pick = defaultStyle(styles) ?: return null
         settings.setStyleId(pick.id)
         _state.update { it.copy(styles = styles, selectedStyleId = pick.id, promptMax = PromptRules.maxChars(pick.maxChars)) }
@@ -444,6 +490,7 @@ class MainViewModel(
 
     companion object {
         const val POLL_INTERVAL_MS = 3_000L
+        private const val DEMO_TYPING_MS = 55L
 
         /** Prefers a photographic Model 3 style: 8K output and remix support. */
         fun defaultStyle(styles: List<SkyboxStyle>): SkyboxStyle? {

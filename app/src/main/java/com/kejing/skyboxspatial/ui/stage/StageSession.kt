@@ -32,6 +32,14 @@ class StageSession {
     /** True while the stage is showing; the main window uses it to label its Enter button. */
     val open: StateFlow<Boolean> = _open.asStateFlow()
 
+    private val _autoSpin = MutableStateFlow(false)
+    /** Demo recording only: the stage slowly turns the panorama by itself. */
+    val autoSpin: StateFlow<Boolean> = _autoSpin.asStateFlow()
+
+    fun setAutoSpin(on: Boolean) {
+        _autoSpin.value = on
+    }
+
     fun prepare(content: StageContent, language: AppLanguage) {
         _content.value = content
         _language.value = language
