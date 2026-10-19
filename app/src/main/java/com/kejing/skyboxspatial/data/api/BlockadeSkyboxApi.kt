@@ -1,5 +1,6 @@
 package com.kejing.skyboxspatial.data.api
 
+import com.kejing.skyboxspatial.domain.PromptRules
 import com.kejing.skyboxspatial.domain.model.SkyboxJob
 import com.kejing.skyboxspatial.domain.model.SkyboxStyle
 import java.io.File
@@ -29,6 +30,9 @@ class BlockadeSkyboxApi(
         withContext(Dispatchers.IO) {
             val body = JSONObject().put("skybox_style_id", styleId).put("prompt", prompt)
             if (remixImagineId != null) body.put("remix_imagine_id", remixImagineId)
+            // The image model reads English; a Chinese/Japanese/Korean description produced an unrelated
+            // scene in testing. The service's prompt enhancer rewrites it into a prompt the model follows.
+            if (PromptRules.needsEnhancer(prompt)) body.put("enhance_prompt", true)
             val text =
                 try {
                     request("POST", "$baseUrl/skybox", apiKey, body.toString())

@@ -1,6 +1,5 @@
 package com.kejing.skyboxspatial.ui.stage
 
-import android.graphics.Bitmap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,7 +35,9 @@ import com.kejing.skyboxspatial.ui.theme.AppLocale
 import com.kejing.skyboxspatial.ui.theme.str
 import com.pico.spatial.core.ecs.AttachmentPanelComponent
 import com.pico.spatial.core.ecs.Entity
+import com.pico.spatial.core.ecs.LoadType
 import com.pico.spatial.core.ecs.TransformComponent
+import com.pico.spatial.core.ecs.resource.TextureResource
 import com.pico.spatial.core.math.Vector3
 import com.pico.spatial.ui.design.Button
 import com.pico.spatial.ui.design.ButtonDefaults
@@ -49,13 +50,18 @@ import com.pico.spatial.ui.foundation.content.SpatialView
 import com.pico.spatial.ui.foundation.content.attachmentPanelComponent
 import com.pico.spatial.ui.foundation.content.panelSize
 import com.pico.spatial.ui.platform.containers.closeStage
+import android.os.SystemClock
+import android.util.Log
+import java.io.File
 import java.io.IOException
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.withFrameNanos
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+private const val TAG = "SkyboxStage"
 private const val YAW_STEP_DEGREES = 30f
 private const val AUTO_SPIN_DEGREES_PER_SECOND = 9f
 private const val AUTO_SPIN_DELAY_MS = 2_500L
@@ -71,19 +77,29 @@ fun SkyboxStageScreen() {
     val content by session.content.collectAsStateWithLifecycle()
     val language by session.language.collectAsStateWithLifecycle()
     val scene = remember { SkySphereScene() }
-    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var texture by remember { mutableStateOf<TextureResource?>(null) }
+    val context = LocalContext.current
     var yaw by remember { mutableFloatStateOf(0f) }
     var saving by remember { mutableStateOf(false) }
     var saveFailed by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(content?.imagePath) {
-        bitmap = null
+        texture = null
         val path = content?.imagePath ?: return@LaunchedEffect
-        bitmap = withContext(Dispatchers.IO) { ImageFiles.decodeForStage(path) }
+        // TextureResource.load is the SDK's file loader and is meant to run off the main thread; creating
+        // an 8K texture from a Bitmap on the main thread froze both windows for ~17 s on the emulator.
+        val preview = session.previewFor(path) ?: withContext(Dispatchers.IO) { ImageFiles.stagePreview(path, File(context.cacheDir, "stage")) }
+        val t0 = SystemClock.elapsedRealtime()
+        if (preview != null) {
+            loadTexture(preview)?.let { texture = it }
+            Log.i(TAG, "preview texture ready after ${SystemClock.elapsedRealtime() - t0} ms")
+        }
+        loadTexture(path)?.let { texture = it }
+        Log.i(TAG, "full texture ready after ${SystemClock.elapsedRealtime() - t0} ms")
     }
     val autoSpin by session.autoSpin.collectAsStateWithLifecycle()
-    val loaded = bitmap != null
+    val loaded = texture != null
     LaunchedEffect(autoSpin, loaded) {
         if (!autoSpin || !loaded) return@LaunchedEffect
         delay(AUTO_SPIN_DELAY_MS)
@@ -108,7 +124,7 @@ fun SkyboxStageScreen() {
         val panel = attachmentPanelComponent(size = panelSize(1100.dp, 150.dp)) {
             StageConsole(
                 title = current?.title.orEmpty(),
-                loading = bitmap == null,
+                loading = texture == null,
                 saved = current?.savedId != null,
                 saving = saving,
                 saveFailed = saveFailed,
@@ -137,12 +153,12 @@ fun SkyboxStageScreen() {
             )
         }
         val panelEntity = remember { Entity().apply { components[AttachmentPanelComponent::class.java] = panel } }
-        val shownBitmap = bitmap
+        val shownTexture = texture
         val shownYaw = yaw
         SpatialView(
             modifier = Modifier.fillMaxSize(),
             update = { _, _ ->
-                shownBitmap?.let { scene.show(it) }
+                shownTexture?.let { scene.show(it) }
                 scene.setYaw(shownYaw)
             },
         ) { content3d, _ ->
@@ -210,3 +226,11 @@ private fun ConsoleIcon(icon: Int, label: String, tint: Color, onClick: () -> Un
         Icon(painter = painterResource(icon), contentDescription = label, modifier = Modifier.size(24.dp), tint = tint)
     }
 }
+
+/** Loads a texture from device storage off the main thread; null (and a log line) when it fails. */
+private suspend fun loadTexture(path: String): TextureResource? =
+    withContext(Dispatchers.IO) {
+        runCatching { TextureResource.load(path, LoadType.FROM_STORAGE) }
+            .onFailure { Log.w(TAG, "texture load failed: $path", it) }
+            .getOrNull()
+    }

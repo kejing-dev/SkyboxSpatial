@@ -1,6 +1,5 @@
 package com.kejing.skyboxspatial.ui.stage
 
-import android.graphics.Bitmap
 import com.pico.spatial.core.ecs.Entity
 import com.pico.spatial.core.ecs.ModelEntity
 import com.pico.spatial.core.ecs.TransformComponent
@@ -21,24 +20,23 @@ import com.pico.spatial.core.math.Vector3
 class SkySphereScene {
     val root: Entity = Entity()
     private var sphere: ModelEntity? = null
-    private var shown: Bitmap? = null
+    private var texture: TextureResource? = null
 
-    /** Replaces the panorama. Calling it again with the same bitmap is a no-op. */
-    fun show(bitmap: Bitmap) {
-        if (shown === bitmap) return
-        sphere?.destroy(true)
-        sphere = null
-        val texture = TextureResource.create(bitmap)
+    /** Replaces the panorama texture; the previous sphere and texture are released. Same texture is a no-op. */
+    fun show(next: TextureResource) {
+        if (texture === next) return
         val material = UnlitMaterial.create().apply {
-            setBaseColorTexture(texture)
+            setBaseColorTexture(next)
             setCullingMode(MaterialCullingMode.NONE)
         }
-        val mesh = MeshResource.createSphere(SphereOption(RADIUS_METERS))
-        val entity = ModelEntity(mesh, material)
+        val entity = ModelEntity(MeshResource.createSphere(SphereOption(RADIUS_METERS)), material)
         entity.components[TransformComponent::class.java]?.setScaleVector(Vector3(-1f, 1f, 1f))
         root.addChild(entity)
+        // Add the new sphere before removing the old one so the view never goes black in between.
+        sphere?.destroy(true)
+        texture?.let { old -> runCatching { old.close() } }
         sphere = entity
-        shown = bitmap
+        texture = next
     }
 
     /** Rotates the whole panorama about the vertical axis, in degrees; 0 puts the image centre straight ahead. */
@@ -48,8 +46,9 @@ class SkySphereScene {
 
     fun destroy() {
         root.destroy(true)
+        texture?.let { runCatching { it.close() } }
         sphere = null
-        shown = null
+        texture = null
     }
 
     private companion object {

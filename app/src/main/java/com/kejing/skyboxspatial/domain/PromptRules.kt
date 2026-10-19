@@ -29,6 +29,9 @@ object PromptRules {
         return atWord.trimEnd() + "…"
     }
 
+    /** True when the description is written in a CJK script, which the image model does not follow directly. */
+    fun needsEnhancer(prompt: String): Boolean = prompt.any { Character.UnicodeScript.of(it.code) in CJK_SCRIPTS }
+
     private val CJK_SCRIPTS = setOf(Character.UnicodeScript.HAN, Character.UnicodeScript.HIRAGANA, Character.UnicodeScript.KATAKANA, Character.UnicodeScript.HANGUL)
     private val CLAUSE_BREAKS = setOf('，', ',', '。', '.', '；', ';', '、', '\n', '!', '！', '?', '？', ':', '：')
 }

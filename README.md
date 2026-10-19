@@ -4,11 +4,17 @@ One sentence in, a 360° environment around you. A PICO OS 6 spatial app that ge
 panoramas with the Skybox AI service, previews them in a window, opens them as a Full Space, and keeps
 favourites on the headset.
 
-![Create page](docs/screenshots/main-window.png)
+![Full Space](docs/screenshots/fullspace.png)
+
+| Create | Preview | Library |
+| --- | --- | --- |
+| ![Create](docs/screenshots/create.png) | ![Preview](docs/screenshots/preview.png) | ![Library](docs/screenshots/library.png) |
 
 ## What it does
 
 - **Create**: describe a place, time and mood (up to 300 characters, three example chips), generate.
+  Chinese, Japanese and Korean descriptions go through the service's prompt enhancer, which the image
+  model needs; the app keeps showing the user's own words.
   The description survives every failure; a result can be refined again with the previous image as
   the base (Model 3 remix).
 - **Preview and enter**: results arrive at native resolution (8K for Model 3 styles). Entering is a

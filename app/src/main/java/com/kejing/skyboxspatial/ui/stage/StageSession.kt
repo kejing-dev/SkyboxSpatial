@@ -53,6 +53,17 @@ class StageSession {
         _open.value = open
     }
 
+    private var preview: Pair<String, String>? = null
+
+    /** The main window writes a 2K preview while "preparing", so the stage can show something at once. */
+    @Synchronized
+    fun preload(imagePath: String, previewPath: String) {
+        preview = imagePath to previewPath
+    }
+
+    @Synchronized
+    fun previewFor(imagePath: String): String? = preview?.takeIf { it.first == imagePath }?.second
+
     fun markSaved(savedId: String) {
         _content.value = _content.value?.copy(savedId = savedId)
     }

@@ -12,6 +12,7 @@ import java.io.File
  *   adb shell settings put global skyboxspatial_demo preview:demo.jpg   # show a local file as a result
  *   adb shell settings put global skyboxspatial_demo stage:demo.jpg     # same, then enter Full Space
  *   adb shell settings put global skyboxspatial_demo record:zh:67       # full flow (style id optional) for a screen recording
+ *   adb shell settings put global skyboxspatial_demo page:library       # open a page for a screenshot
  *   adb shell settings delete global skyboxspatial_demo
  *
  * `record` types the text of files/demo_prompt.txt, generates for real, saves, enters the Full Space
@@ -26,6 +27,8 @@ object DemoMode {
     sealed interface Request {
         data class ShowFile(val imagePath: String, val enterStage: Boolean) : Request
         data class Record(val language: AppLanguage, val prompt: String, val styleId: Int?) : Request
+        /** Opens a page (create, library, settings) for screenshots. */
+        data class ShowPage(val page: String) : Request
     }
 
     fun read(context: Context): Request? {
@@ -38,6 +41,7 @@ object DemoMode {
             val parts = arg.split(':')
             return Request.Record(AppLanguage.fromTag(parts.getOrNull(0)), prompt, parts.getOrNull(1)?.toIntOrNull())
         }
+        if (mode == "page") return Request.ShowPage(arg)
         val file = if (arg.startsWith("/")) File(arg) else File(context.filesDir, arg)
         if (!file.isFile) return null
         return Request.ShowFile(file.path, enterStage = mode == "stage")

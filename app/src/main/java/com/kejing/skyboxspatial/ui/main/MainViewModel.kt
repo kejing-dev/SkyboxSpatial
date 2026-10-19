@@ -81,6 +81,8 @@ class MainViewModel(
         when (request) {
             is DemoMode.Request.ShowFile -> showDemoFile(request)
             is DemoMode.Request.Record -> recordDemo(request)
+            is DemoMode.Request.ShowPage ->
+                Page.entries.firstOrNull { it.name.equals(request.page, ignoreCase = true) }?.let { page -> _state.update { it.copy(page = page) } }
         }
     }
 
@@ -110,7 +112,7 @@ class MainViewModel(
                 it.copy(language = request.language, page = Page.CREATE, phase = CreatePhase.Compose, prompt = "", remixSourceId = null,
                     selectedStyleId = request.styleId ?: it.selectedStyleId)
             }
-            delay(3_000)
+            delay(DEMO_START_DELAY_MS)
             for (i in 1..request.prompt.length) {
                 setPrompt(request.prompt.take(i), title = null)
                 delay(DEMO_TYPING_MS)
@@ -283,7 +285,8 @@ class MainViewModel(
                 _state.update { it.copy(phase = CreatePhase.NetworkLost(jobId)) }
                 return
             }
-            val shown = job.copy(prompt = job.prompt.ifBlank { _state.value.prompt })
+            // The service may store a rewritten (enhanced/translated) prompt; the user keeps their own words.
+            val shown = job.copy(prompt = _state.value.prompt.trim().ifBlank { job.prompt })
             when (job.status) {
                 JobStatus.COMPLETE -> {
                     startDownload(shown)
@@ -344,7 +347,12 @@ class MainViewModel(
         _state.update { it.copy(phase = phase.copy(checking = true)) }
         viewModelScope.launch {
             val found = try {
-                api.recentJobs(current.apiKey, 5).firstOrNull { it.prompt.trim() == current.prompt.trim() && !it.status.finished || it.prompt.trim() == current.prompt.trim() && it.status == JobStatus.COMPLETE }
+                val prompt = current.prompt.trim()
+                val recent = api.recentJobs(current.apiKey, 5)
+                recent.firstOrNull { it.prompt.trim() == prompt && (!it.status.finished || it.status == JobStatus.COMPLETE) }
+                    // An enhanced prompt is stored rewritten, so text cannot match; a task still running is ours
+                    // because the app submits one at a time.
+                    ?: if (PromptRules.needsEnhancer(prompt)) recent.firstOrNull { !it.status.finished } else null
             } catch (e: Exception) {
                 null
             }
@@ -417,8 +425,19 @@ class MainViewModel(
         if (state.phase is CreatePhase.EnteringStage) return
         phaseBeforeStage = state.phase
         stageSession.prepare(content, state.language)
-        stageToken += 1
-        _state.update { it.copy(phase = CreatePhase.EnteringStage(failed = false, detail = null), stageRequest = StageRequest(stageToken)) }
+        _state.update { it.copy(phase = CreatePhase.EnteringStage(failed = false, detail = null)) }
+        // "Preparing Full Space": decode the panorama while the current environment stays, then open.
+        viewModelScope.launch {
+            val preview = withContext(io) { ImageFiles.stagePreview(content.imagePath, File(cacheDir, "stage")) }
+            if (_state.value.phase !is CreatePhase.EnteringStage) return@launch
+            if (preview == null) {
+                _state.update { it.copy(phase = CreatePhase.EnteringStage(failed = true, detail = "Image could not be decoded")) }
+                return@launch
+            }
+            stageSession.preload(content.imagePath, preview)
+            stageToken += 1
+            _state.update { it.copy(stageRequest = StageRequest(stageToken)) }
+        }
     }
 
     private fun onStageOpened(ok: Boolean, detail: String?) {
@@ -490,7 +509,8 @@ class MainViewModel(
 
     companion object {
         const val POLL_INTERVAL_MS = 3_000L
-        private const val DEMO_TYPING_MS = 55L
+        private const val DEMO_TYPING_MS = 90L
+        private const val DEMO_START_DELAY_MS = 6_000L
 
         /** Prefers a photographic Model 3 style: 8K output and remix support. */
         fun defaultStyle(styles: List<SkyboxStyle>): SkyboxStyle? {

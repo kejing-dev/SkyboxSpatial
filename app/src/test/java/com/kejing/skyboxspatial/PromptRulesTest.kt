@@ -32,6 +32,13 @@ class PromptRulesTest {
     }
 
     @Test
+    fun cjkPromptsUseTheEnhancer() {
+        assertTrue(PromptRules.needsEnhancer("黄昏的高山湖泊"))
+        assertTrue(PromptRules.needsEnhancer("Lake at dusk 夕阳"))
+        assertFalse(PromptRules.needsEnhancer("A lake at dusk, café terrace"))
+    }
+
+    @Test
     fun generateNeedsSomeText() {
         assertFalse(PromptRules.canGenerate(" a "))
         assertTrue(PromptRules.canGenerate("海边"))
