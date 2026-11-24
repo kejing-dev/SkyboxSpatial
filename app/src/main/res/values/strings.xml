@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SkyboxSpatial</string>
+    <string name="app_name">一句话全景 SkyboxSpatial</string>
 
     <!-- Title bar -->
     <string name="nav_create">Create environment</string>
